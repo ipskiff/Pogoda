@@ -13,8 +13,7 @@ public class Parser {
     @org.jetbrains.annotations.NotNull
     private static Document getPage() throws IOException {
         String url="https://www.pogoda.spb.ru/";
-        Document page = Jsoup.parse(new URL(url), 10000);
-        return page;
+        return Jsoup.parse(new URL(url), 10000);
     }
 
     //14.10 Четверг погода сегодня
@@ -36,8 +35,17 @@ public class Parser {
         if (index == 0) {
             Element valueLn = values.get(3);
             boolean isMorning = valueLn.text().contains("Утро");
+            boolean isDay = valueLn.text().contains("День");
+            boolean isEvening = valueLn.text().contains("Вечер");
+            boolean isNight = valueLn.text().contains("Ночь");
             if (isMorning) {
                 iterationCount = 3;
+            } else if (isDay) {
+                iterationCount = 2;
+            } else if (isEvening) {
+                iterationCount = 1;
+            } else if (isNight) {
+                iterationCount = 0;
             }
         }
 
@@ -58,6 +66,7 @@ public class Parser {
         // css query language
         Element tableWth = page.select("table[class=wt]").first();
 
+        assert tableWth != null;
         Elements names = tableWth.select("tr[class=wth]");
         Elements values = tableWth.select("tr[valign=top]");
         int index=0;
